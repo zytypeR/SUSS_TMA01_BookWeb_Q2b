@@ -1,0 +1,57 @@
+{% extends "book_base.html" %}
+
+{% block mainblock %}
+
+<div class="col-xl-12 px-2">
+    <div class="card card-common">
+        <div class="card-header book-header-green d-flex justify-content-between align-items-center mb-0 py-1"> 
+            <h5>Number of titles: {{ all_books|length }}</h5>
+            <div class="float-right">
+                <form class="form-inline" method="GET" action="{{ url_for('book.book_titles') }}">
+                    <label for="category" class="mr-2">Category:</label>
+                    <select id="category" name="category" class="form-control">
+                      <option value="All" {% if selected_category == 'All' %}selected{% endif %}>All</option>
+                      <option value="Children" {% if selected_category == 'Children' %}selected{% endif %}>Children</option>
+                      <option value="Teens" {% if selected_category == 'Teens' %}selected{% endif %}>Teens</option>
+                      <option value="Adult" {% if selected_category == 'Adult' %}selected{% endif %}>Adult</option>
+                    </select>
+                    <button class="btn btn-success ml-0">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% for book in all_books %}
+<div class="col-xl-12 col-md-12 col-sm-12 p-2">
+    <div class="card card-common h-100 d-flex flex-row">
+      
+        <div class="col-2 p-0 h-100 d-flex align-items-start justify-content-center pt-4">
+            <img src="{{ book.image_url }}" class="img-fluid h-75" style="object-fit: contain;" alt="Cover of {{ book.title }}" />
+        </div>
+
+        <div class="card-body col-10">
+            <h4 class="card-title">{{ book.title }}</h4>
+            <h6 class="card-subtitle mb-2 text-muted">By {{ book.author }}</h6>
+            <div class="category-wrapper-fix">
+            <p class="card-text small mb-2 pl-0">
+            Category: {{ book.category }}, {{ book.genres | join(', ') }} <br>
+            Pages: {{ book.pages }}
+            </p>
+        </div>
+            {% set paragraphs = book.description %}
+            
+            {% if paragraphs|length > 0 %}
+                <p class="card-text">{{ paragraphs[0] }}</p>
+            {% endif %}
+
+            {% if paragraphs|length > 1 %}
+                <p class="card-text">{{ paragraphs[-1] }}</p>
+            {% endif %}
+
+            <a href="{{ url_for('book.view_book_detail', title=book.title) }}" class="btn btn-success float-right mt-4">More details</a>
+        </div>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}
