@@ -1,8 +1,9 @@
 from mongoengine import Document, StringField, ReferenceField, DateTimeField, IntField
 from datetime import datetime
-from .books import Book # CRITICAL: Import Book model for the ReferenceField
+from flask_login import UserMixin
+from .books import Book 
 
-class User(Document):
+class User(Document, UserMixin):
     """
     UML Class: User
     Fields: email, password, name
