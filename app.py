@@ -1,17 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, Blueprint, request
-from models.books import Book 
+from flask import render_template, redirect, url_for, Blueprint, request
+# Import the initialized app, db, and the Book model from the local __init__.py
+from .__init__ import app, db, Book 
 
-def create_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'your_strong_secret_key' 
-    app.static_folder = 'assets' 
-    class DummyUser:
-        is_authenticated = False
-    
-    app.jinja_env.globals['current_user'] = DummyUser()
-    
-    return app
-app = create_app()
+# --- Seeding Execution Point (Q2b Requirement) ---
+# This executes the initialize_db method inside the Book class, seeding the DB if empty.
+Book.initialize_db()
 
 # BLUEPRINT
 book = Blueprint('book', __name__, template_folder='templates')
