@@ -18,12 +18,11 @@ class Loan(Document):
     UML Class: Loan
     Fields: member, book, borrowDate, returnDate, renewCount
     """
-    # ReferenceField links to the other document classes
     member = ReferenceField(User, required=True)
     book = ReferenceField(Book, required=True)
     
     borrowDate = DateTimeField(default=datetime.utcnow, required=True)
-    returnDate = DateTimeField() # Nullable if not yet returned
+    returnDate = DateTimeField()
     
     renewCount = IntField(default=0)
     meta = {'collection': 'loan'}

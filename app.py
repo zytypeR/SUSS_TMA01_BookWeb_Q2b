@@ -1,15 +1,14 @@
 from flask import render_template, redirect, url_for, Blueprint, request
-# Import the initialized app, db, and the Book model from the local __init__.py
 from .__init__ import app, db, Book 
 
-# --- Seeding Execution Point (Q2b Requirement) ---
-# This executes the initialize_db method inside the Book class, seeding the DB if empty.
+# Seeding Execution Point
+# executes the initialize_db method inside the Book class, seeding the DB if empty.
 Book.initialize_db()
 
 # BLUEPRINT
 book = Blueprint('book', __name__, template_folder='templates')
 
-# Route for the main Book Titles page
+# Book Titles page route
 @book.route('/booktitles', methods=['GET'])
 def book_titles():
     selected_category = request.args.get('category', 'All') 
@@ -20,7 +19,7 @@ def book_titles():
                         selected_category=selected_category,
                         panel="BOOK TITLES")
 
-# Route for the Book Details page
+# Book Details page route
 @book.route('/viewBookDetail/<title>')
 def view_book_detail(title):
     book_details = Book.getBookByTitle(title)
