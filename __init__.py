@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_mongoengine import MongoEngine
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin
+from mongoengine import Document
 
 # --- 1. APPLICATION FACTORY ---
 
@@ -43,3 +44,7 @@ app, db, login_manager = create_app()
 # This ensures all models (Book, User, Loan) are registered with MongoEngine.
 from .models.books import Book
 from .models.user_loan import User, Loan
+
+@login_manager.user_loader
+def load_user(user_id):
+    return None 
