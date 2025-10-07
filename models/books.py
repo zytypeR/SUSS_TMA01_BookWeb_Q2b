@@ -1,3 +1,5 @@
+from mongoengine import Document, StringField, ListField, IntField
+
 # raw book data provided 
 RAW_BOOK_DATA = [
     {
@@ -162,55 +164,70 @@ RAW_BOOK_DATA = [
         }
 ]
 
-
-class Book:
+class Book(Document):
     """
-    Model to handle book data retrieval and sorting.
+    UML Class: Book
+    Fields: genres, title, category, url, description, authors, pages, available, copies
     """
-    @staticmethod
-    def getAllBooks(category_filter='All'):
-        """
-        Retrieves all books, formats the data, and sorts them by title.
-        """
-        filtered_data = []
+    genres = ListField(StringField(), required=True)
+    title = StringField(required=True, unique=True)
+    category = StringField(required=True)
+    url = StringField(required=True)
+    description = ListField(StringField())
+    authors = ListField(StringField(), required=True)
+    pages = IntField(required=True)
+    available = IntField(required=True)
+    copies = IntField(required=True)
+    meta = {'collection': 'book'}
 
+    @classmethod
+    def initialize_db(cls):
+        """
+        Implements the core Q2(b) requirement:
+        If the Book collection is empty, read RAW_BOOK_DATA and create Book documents 
+        to store into MongoDB.
+        """
+        if cls.objects.count() == 0:
+            print("--- Seeding Check: Book collection is empty. Preparing to load data... ---")
+            for book_data in RAW_BOOK_DATA:
+                try:
+                    book = cls(**book_data)
+                    book.save() 
+                except Exception as e:
+                    print(f"Error saving book {book_data.get('title')}: {e}")
+            print("--- Initial Seeding complete. ---")
+
+    @classmethod
+    def getAllBooks(cls, category_filter='All'):
+        """
+        Retrieves books from MongoDB based on category filter and sorts by title.
+        """
+        # 1. Query MongoDB (using .order_by('title') for sorting)
         if category_filter == 'All':
-            # if 'All' is selected, start with the full list
-            books_to_process = RAW_BOOK_DATA
+            books = cls.objects.all().order_by('title')
         else:
-            # filter the list based on the category
-            for book in RAW_BOOK_DATA:
-                if book['category'] == category_filter:
-                    filtered_data.append(book)
-            books_to_process = filtered_data
-            
-        formatted_books = []
+            books = cls.objects(category=category_filter).order_by('title')
 
-        for book in books_to_process:
-            formatted = book.copy()
-            formatted['image_url'] = book['url'] 
-            formatted['author'] = ", ".join(book['authors']) 
-            
+        # 2. Convert and Format for Jinja Template
+        formatted_books = []
+        for book in books:
+            formatted = book.to_mongo().to_dict()
+            formatted['image_url'] = book.url 
+            formatted['author'] = ", ".join(book.authors)
             formatted_books.append(formatted)
             
-        return sorted(formatted_books, key=lambda x: x['title'])
-    
-    # for more details when clicked 
-    @staticmethod
-    def getBookByTitle(title):
+        return formatted_books
+
+    @classmethod
+    def getBookByTitle(cls, title):
         """
-        Retrieves a single book dictionary from RAW_BOOK_DATA by title.
-        Returns the formatted book or None if not found.
+        Retrieves a single book document from MongoDB by title, and formats it.
         """
-        found_book = None
-        for book in RAW_BOOK_DATA:
-            if book['title'] == title:
-                found_book = book
-                break
+        book = cls.objects(title=title).first()
         
-        if found_book:
-            formatted = found_book.copy()
-            formatted['image_url'] = found_book['url']
-            formatted['author'] = ", ".join(found_book['authors'])
+        if book:
+            formatted = book.to_mongo().to_dict()
+            formatted['image_url'] = book.url
+            formatted['author'] = ", ".join(book.authors)
             return formatted
         return None
