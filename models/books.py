@@ -183,8 +183,7 @@ class Book(Document):
     @classmethod
     def initialize_db(cls):
         """
-        Implements the core Q2(b) requirement:
-        If the Book collection is empty, read RAW_BOOK_DATA and create Book documents 
+        meeting the requirement that if the Book collection is empty, read RAW_BOOK_DATA and create Book documents 
         to store into MongoDB.
         """
         if cls.objects.count() == 0:
@@ -200,7 +199,7 @@ class Book(Document):
     @classmethod
     def getAllBooks(cls, category_filter='All'):
         """
-        Retrieves books from MongoDB based on category filter and sorts by title.
+        retrieves books from MongoDB based on category filter and sorts by title.
         """
         # 1. Query MongoDB (using .order_by('title') for sorting)
         if category_filter == 'All':
@@ -221,7 +220,7 @@ class Book(Document):
     @classmethod
     def getBookByTitle(cls, title):
         """
-        Retrieves a single book document from MongoDB by title, and formats it.
+        retrieves a single book document from MongoDB by title, and formats it.
         """
         book = cls.objects(title=title).first()
         
