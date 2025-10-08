@@ -3,10 +3,10 @@
 
 {% block mainblock %}
 
-<div class="col-xl-6 col-lg-8 col-md-10 mx-auto"> 
+<div class="col-xl-8 col-lg-10 col-md-12 mr-auto pl-3 pr-0"> 
     <div class="card card-common p-4">
         
-        <h2 class="mb-4">Login</h2>
+        <h1 class="mb-5 font-weight-bold border-bottom pb-2 display-4">Login</h1>
         
         <form method="POST">
             {# Form Security #}
@@ -16,13 +16,12 @@
             {{ render_field(form.email, placeholder='Enter email') }}
             
             {# Password Field #}
-            {{ render_field(form.password, placeholder='Enter password') }}
-            
-            {# Remember Me #}
-            <div class="form-check my-3">
+            {{ render_field(form.password, placeholder='Enter password', type='password') }}
+
+            <div class="form-group form-check mt-3">
                 {{ form.remember(class_='form-check-input') }}
                 <label class="form-check-label" for="{{ form.remember.id }}">
-                    {{ form.remember.label.text }}
+                    Remember Me
                 </label>
             </div>
 
