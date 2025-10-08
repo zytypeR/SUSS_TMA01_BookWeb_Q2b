@@ -8,6 +8,24 @@ class User(Document, UserMixin):
     password = StringField(required=True)
     name = StringField(required=True)
     meta = {'collection': 'user'}
+    
+    @classmethod
+    def getUser(cls, email):
+        """Finds a user object by email for login/registration check."""
+        # Use .first() to return a single user object or None
+        return cls.objects(email=email).first()
+
+    @classmethod
+    def createUser(cls, email, password, name):
+        """Creates and saves a new user."""
+        new_user = cls(email=email, password=password, name=name)
+        new_user.save()
+        
+    @classmethod
+    def getUserById(cls, user_id):
+        """Finds a user object by ID (used by Flask-Login)."""
+        # Finds user by the MongoEngine ID
+        return cls.objects(id=user_id).first()
 
 class Loan(Document):
     member = ReferenceField(User, required=True)

@@ -1,0 +1,57 @@
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_required, logout_user, current_user
+from flask import Blueprint, request, redirect, render_template, url_for, flash
+# Imports are adjusted for your file structure
+from ..__init__ import login_manager 
+from ..models.user_loan import User
+from ..models.forms import RegForm
+
+# Set template_folder to look in the main 'templates' folder (up one level)
+auth = Blueprint('auth', __name__, template_folder='../templates')
+
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegForm()
+    if request.method == 'POST':
+        # Use form.validate_on_submit() for standard Flask-WTF validation and submission check
+        if form.validate_on_submit(): 
+            existing_user = User.getUser(email=form.email.data)
+            if not existing_user:
+                hashpass = generate_password_hash(form.password.data, method='sha256')
+                User.createUser(email=form.email.data, password=hashpass, name=form.name.data)
+                flash('Registration successful! Please log in.', 'success')
+                return redirect(url_for('auth.login'))
+            else:
+                form.email.errors.append("User already existed")
+                # Fall through to render_template below to show errors
+    return render_template('register.html', form=form, panel="REGISTER")
+
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    form = RegForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            check_user = User.getUser(email=form.email.data)
+            if check_user:
+                # Use check_user.password because check_user is now a MongoEngine User object
+                if check_password_hash(check_user.password, form.password.data):
+                    # Uses form.remember.data for 'Remember Me' functionality
+                    login_user(check_user, remember=form.remember.data)
+                    # Redirect to your book titles page
+                    return redirect(url_for('book.book_titles'))    
+                else:
+                    form.password.errors.append("User Password Not Correct")
+            else:
+                form.email.errors.append("No Such User")
+    
+    return render_template('login.html', form=form, panel="LOGIN")
+
+@auth.route('/logout', methods = ['GET'])
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    # Redirect to your book titles page
+    return redirect(url_for('book.book_titles'))
+
+# NOTE: The load_user function is placed in __init__.py where the login_manager is initialized.

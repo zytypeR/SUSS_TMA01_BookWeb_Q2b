@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, Blueprint, request
 from .__init__ import app, db, Book 
+from .controllers.auth import auth
 
 # Seeding Execution Point
 # executes the initialize_db method inside the Book class, seeding the DB if empty.
@@ -32,6 +33,7 @@ def view_book_detail(title):
 
 # register BLUEPRINT and route 
 app.register_blueprint(book)
+app.register_blueprint(auth)
 
 # set application to open on the Book Titles page
 @app.route('/')

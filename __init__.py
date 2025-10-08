@@ -39,4 +39,5 @@ from .models.user_loan import User, Loan
 
 @login_manager.user_loader
 def load_user(user_id):
-    return None 
+    # Retrieves the user object using the ID provided by Flask-Login
+    return User.getUserById(user_id)
