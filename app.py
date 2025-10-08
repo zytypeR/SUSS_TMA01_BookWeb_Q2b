@@ -39,5 +39,3 @@ app.register_blueprint(auth)
 @app.route('/')
 def home():
     return redirect(url_for('book.book_titles'))
-
-# TEST TEST TEST 
