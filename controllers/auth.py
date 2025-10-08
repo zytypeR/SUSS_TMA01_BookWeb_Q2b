@@ -16,13 +16,41 @@ def register():
         if form.validate_on_submit(): 
             existing_user = User.getUser(email=form.email.data)
             if not existing_user:
+                
+                # --- NEW AVATAR AND ADMIN LOGIC START ---
+                # 1. Determine Admin Status and Avatar File
+                is_admin = False
+                avatar_file = 'default-avatar.png'
+                
+                if form.email.data == 'admin@lib.sg':
+                    is_admin = True
+                    avatar_file = 'admin.jpeg' # Set admin's specific avatar
+                # --- NEW AVATAR AND ADMIN LOGIC END ---
+                
+                # 2. Hash Password
                 hashpass = generate_password_hash(form.password.data, method='sha256')
-                User.createUser(email=form.email.data, password=hashpass, name=form.name.data)
+                
+                # 3. Create the User object directly with the new fields
+                new_user = User(
+                    email=form.email.data,
+                    password=hashpass,
+                    name=form.name.data,
+                    is_admin=is_admin,       # <--- NEW FIELD
+                    avatar_file=avatar_file   # <--- NEW FIELD
+                )
+                
+                # 4. Save the user to the database
+                new_user.save() 
+                
+                # Removed the static User.createUser() call:
+                # User.createUser(email=form.email.data, password=hashpass, name=form.name.data)
+                
                 flash('Registration successful! Please log in.', 'success')
                 return redirect(url_for('auth.login'))
             else:
                 form.email.errors.append("User already existed")
                 # Fall through to render_template below to show errors
+    
     return render_template('register.html', form=form, panel="REGISTER")
 
 @auth.route('/login', methods=['GET', 'POST'])

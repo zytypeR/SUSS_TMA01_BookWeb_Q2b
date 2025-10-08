@@ -37,8 +37,15 @@
             
             {# --- START: User Name Display --- #}
             {% if current_user.is_authenticated %}
-            <div class="text-light text-center py-3 mb-4 bottom-border">
-                <h5 class="text-light font-weight-bold mb-2">{{ current_user.name }}</h5>
+            <div class="user-profile-avatar d-flex align-items-center justify-content-start text-light py-3 px-3 mb-2 bottom-border">
+                
+                <img src="{{ url_for('static', filename='img/' + current_user.avatar_file) }}" 
+                    alt="Avatar" 
+                    class="rounded-circle mr-3" 
+                    style="width: 35px; height: 35px; object-fit: cover; border: 2px solid white;">
+                
+                <h5 class="text-light font-weight-bold mb-0">{{ current_user.name }}</h5>
+                
             </div>
             {% endif %}
 

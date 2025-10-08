@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, ReferenceField, DateTimeField, IntField
+from mongoengine import Document, StringField, ReferenceField, DateTimeField, IntField, BooleanField
 from datetime import datetime
 from flask_login import UserMixin
 from .books import Book 
@@ -7,6 +7,8 @@ class User(Document, UserMixin):
     email = StringField(required=True, unique=True)
     password = StringField(required=True)
     name = StringField(required=True)
+    is_admin = BooleanField(default=False) 
+    avatar_file = StringField(default='default-avatar.png')
     meta = {'collection': 'user'}
     
     @classmethod
