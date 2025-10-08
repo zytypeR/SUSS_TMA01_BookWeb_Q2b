@@ -1,10 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from flask import Blueprint, request, redirect, render_template, url_for, flash
-# Imports are adjusted for your file structure
 from ..__init__ import login_manager 
 from ..models.user_loan import User
-from ..models.forms import RegForm
+from ..models.forms import RegForm, LoginForm
 
 # Set template_folder to look in the main 'templates' folder (up one level)
 auth = Blueprint('auth', __name__, template_folder='../templates')
@@ -28,7 +27,7 @@ def register():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    form = RegForm()
+    form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
             check_user = User.getUser(email=form.email.data)
