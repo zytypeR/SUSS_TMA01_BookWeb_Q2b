@@ -201,13 +201,13 @@ class Book(Document):
         """
         retrieves books from MongoDB based on category filter and sorts by title.
         """
-        # 1. Query MongoDB (using .order_by('title') for sorting)
+        # query MongoDB (using .order_by('title') for sorting)
         if category_filter == 'All':
             books = cls.objects.all().order_by('title')
         else:
             books = cls.objects(category=category_filter).order_by('title')
 
-        # 2. Convert and Format for Jinja Template
+        # convert and format for Jinja Template
         formatted_books = []
         for book in books:
             formatted = book.to_mongo().to_dict()
