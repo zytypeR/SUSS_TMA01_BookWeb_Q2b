@@ -1,0 +1,54 @@
+{% extends "book_base.html" %}
+{% from "_render_field.html" import render_field %}
+
+{% block mainblock %}
+
+<div class="col-xl-10 col-lg-12 col-md-12 mr-auto pl-3 pr-0"> 
+    <div class="card card-common p-4">
+        
+        <h1 class="mb-5 font-weight-bold border-bottom pb-2 display-5">Add New Book</h1>
+        
+        <form method="POST">
+            {# Form Security #}
+            {{ form.hidden_tag() }} 
+            
+            <div class="row">
+                <div class="col-md-6">
+                    {# Title Field #}
+                    {{ render_field(form.title, placeholder='Enter book title') }}
+                    
+                    {# Authors Field (Unlimited support via TextAreaField) #}
+                    {{ render_field(form.authors, rows=3) }}
+                    
+                    {# Pages Field #}
+                    {{ render_field(form.pages) }}
+
+                    {# Image URL Field #}
+                    {{ render_field(form.url, placeholder='Enter image URL') }}
+                </div>
+                
+                <div class="col-md-6">
+                    {# Category Field #}
+                    {{ render_field(form.category) }}
+
+                    {# Genres Field (Multi-select) #}
+                    {{ render_field(form.genres, class_='form-control', size=8) }}
+
+                    {# Copies Field #}
+                    {{ render_field(form.copies) }}
+
+                    {# Note: 'available' is not rendered as it's set in the backend #}
+                </div>
+            </div>
+
+            {# Description Field (Full width) #}
+            {{ render_field(form.description, rows=5) }}
+
+            <button type="submit" class="btn btn-success float-right mt-3">{{ form.submit.label.text }}</button>
+            
+        </form>
+        
+    </div>
+</div>
+
+{% endblock %}
