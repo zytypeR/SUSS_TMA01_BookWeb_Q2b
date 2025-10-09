@@ -51,7 +51,7 @@
             <ul class="navbar-nav flex-column mt-4">
               <li class="nav-item">
                 <a href="{{ url_for('book.book_titles') }}" class="nav-link p-3 mb-2 sidebar-link">
-                  <i class="fas fa-book text-light fa-lg mr-3"></i>Book Titles
+                  <i class="fas fa-address-book text-light fa-lg mr-3"></i>Book Titles
                 </a>
               </li>
 
@@ -59,7 +59,7 @@
               {% if current_user.is_authenticated and current_user.is_admin %}
               <li class="nav-item">
                 <a href="{{ url_for('book.new_book') }}" class="nav-link p-3 mb-2 sidebar-link">
-                  <i class="fas fa-plus-circle text-light fa-lg mr-3"></i>Add New Book
+                  <i class="fas fa-cloud-upload-alt text-light fa-lg mr-3"></i>New Book
                 </a>
               </li>
               {% endif %}
