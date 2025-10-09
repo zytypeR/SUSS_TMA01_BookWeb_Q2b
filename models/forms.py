@@ -16,11 +16,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class NewBookForm(FlaskForm):
-    title = StringField('Title', validators=[DataRequired(), Length(max=150)])
-    
-    # Authors: Using TextAreaField for unlimited authors, separated by commas.
-    authors = TextAreaField('Authors (separate with comma, e.g., Author 1, Author 2)', validators=[DataRequired()])
-    
+    title = StringField('Title:', validators=[DataRequired(), Length(max=150)])
+        
     # Genres: Using SelectMultipleField for multi-selection.
     genres_choices = [
         "Animals", "Business", "Comics", "Communication", "Dark Academia", 
@@ -33,16 +30,17 @@ class NewBookForm(FlaskForm):
     
     # Category: Using SelectField for single selection.
     category_choices = [('Adult', 'Adult'), ('Teens', 'Teens'), ('Children', 'Children')]
-    category = SelectField('Category', choices=category_choices, validators=[DataRequired()])
+    category = SelectField('Choose a category:', choices=category_choices, validators=[DataRequired()])
     
     # Description: Using TextAreaField for multiple paragraphs. Instruct admin to separate paragraphs by newlines.
-    description = TextAreaField('Description (separate paragraphs with a new line)', validators=[DataRequired()])
+    description = TextAreaField('Description:', validators=[DataRequired()])
     
-    pages = IntegerField('Pages', validators=[DataRequired(), NumberRange(min=1)])
+    pages = IntegerField('Number of Pages:', validators=[DataRequired(), NumberRange(min=1)])
     
-    copies = IntegerField('Total Copies', validators=[DataRequired(), NumberRange(min=1)])
+    copies = IntegerField('Number of Copies:', validators=[DataRequired(), NumberRange(min=1)])
     
-    # URL is for the image
-    url = StringField('Image URL', validators=[DataRequired(), URL()])
+    url = StringField('URL for Cover:', validators=[DataRequired(), URL()])
 
-    submit = SubmitField('Add Book')
+    authors = TextAreaField('Author/s', validators=[DataRequired()])
+
+    submit = SubmitField('Submit')

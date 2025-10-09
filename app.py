@@ -42,8 +42,14 @@ def new_book():
     if request.method == 'POST':
         if form.validate_on_submit():
             
-            # 2. Process Authors Field (split by comma and strip whitespace)
-            author_list = [a.strip() for a in form.authors.data.split(',') if a.strip()]
+            # --- AUTHOR PROCESSING LOGIC (Comma/Newline Separated) ---
+            book_authors = [name.strip() for name in form.authors.data.split('\n') if name.strip()]
+            
+            # 3. Check if we actually have any authors (should be handled by DataRequired, but good practice)
+            if not book_authors:
+                 flash("The book must have at least one author.", "danger")
+                 return render_template('new_book.html', form=form, panel="ADD A BOOK")
+            # --- END AUTHOR PROCESSING LOGIC ---
             
             # 3. Process Description Field (split by newline for paragraphs)
             description_list = [p.strip() for p in form.description.data.split('\n') if p.strip()]
@@ -52,7 +58,7 @@ def new_book():
                 # 4. Create and Save the new Book
                 new_book = Book(
                     title=form.title.data,
-                    authors=author_list, # Use processed list
+                    authors=book_authors, # Use processed list
                     genres=form.genres.data,
                     category=form.category.data,
                     description=description_list, # Use processed list
@@ -76,7 +82,7 @@ def new_book():
 
     return render_template('new_book.html', 
                            form=form,
-                           panel="ADD BOOK")
+                           panel="ADD A BOOK")
 
 app.register_blueprint(book)
 app.register_blueprint(auth)
