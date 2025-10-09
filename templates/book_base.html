@@ -35,7 +35,6 @@
             
             <a href="{{ url_for('book.book_titles') }}" class="navbar-brand d-block mx-auto text-center py-3 mb-4 bottom-border">SG Library</a>
             
-            {# --- START: User Name Display --- #}
             {% if current_user.is_authenticated %}
             <div class="user-profile-avatar d-flex align-items-center justify-content-start text-light py-3 px-3 mb-2 bottom-border">
                 
@@ -56,7 +55,6 @@
                 </a>
               </li>
               
-              {# Conditional Authentication Links #}
               {% if current_user.is_authenticated %}
               {% else %}
               <li class="nav-item">
