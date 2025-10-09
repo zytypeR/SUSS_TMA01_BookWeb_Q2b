@@ -14,7 +14,6 @@ class User(Document, UserMixin):
     @classmethod
     def getUser(cls, email):
         """Finds a user object by email for login/registration check."""
-        # Use .first() to return a single user object or None
         return cls.objects(email=email).first()
 
     @classmethod
@@ -26,7 +25,6 @@ class User(Document, UserMixin):
     @classmethod
     def getUserById(cls, user_id):
         """Finds a user object by ID (used by Flask-Login)."""
-        # Finds user by the MongoEngine ID
         return cls.objects(id=user_id).first()
 
 class Loan(Document):
@@ -38,5 +36,3 @@ class Loan(Document):
     
     renewCount = IntField(default=0)
     meta = {'collection': 'loan'}
-
-### TEST TEST I CHANGED MY REPO NAME 

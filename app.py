@@ -30,9 +30,8 @@ def view_book_detail(title):
                            panel="BOOK DETAILS")
 
 @book.route('/new_book', methods=['GET', 'POST'])
-@login_required # Ensure only logged-in users can access
+@login_required
 def new_book():
-    # 1. Admin Check (If not admin, redirect to book titles)
     if not current_user.is_admin:
         flash("You must be an administrator to add new books.", "danger")
         return redirect(url_for('book.book_titles'))
@@ -41,37 +40,29 @@ def new_book():
     
     if request.method == 'POST':
         if form.validate_on_submit():
-            
-            # --- AUTHOR PROCESSING LOGIC (Comma/Newline Separated) ---
             book_authors = [name.strip() for name in form.authors.data.split('\n') if name.strip()]
             
-            # 3. Check if we actually have any authors (should be handled by DataRequired, but good practice)
             if not book_authors:
                  flash("The book must have at least one author.", "danger")
                  return render_template('new_book.html', form=form, panel="ADD A BOOK")
-            # --- END AUTHOR PROCESSING LOGIC ---
             
-            # 3. Process Description Field (split by newline for paragraphs)
             description_list = [p.strip() for p in form.description.data.split('\n') if p.strip()]
 
             try:
-                # 4. Create and Save the new Book
                 new_book = Book(
                     title=form.title.data,
-                    authors=book_authors, # Use processed list
+                    authors=book_authors, 
                     genres=form.genres.data,
                     category=form.category.data,
-                    description=description_list, # Use processed list
+                    description=description_list,
                     pages=form.pages.data,
                     copies=form.copies.data,
-                    # Available is set to copies as it's a new book
                     available=form.copies.data, 
                     url=form.url.data
                 )
                 new_book.save()
                 
                 flash(f"Book '{new_book.title}' added successfully!", "success")
-                # Remain on the same page (GET request to clear the form)
                 return redirect(url_for('book.new_book'))
                 
             except Exception as e:

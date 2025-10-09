@@ -3,17 +3,12 @@
 
 {% block mainblock %}
 
-{# Container is set to full width (col-xl-12) as requested in the previous step #}
 <div class="col-xl-12 col-lg-12 col-md-12 mr-auto pl-3 pr-4"> 
     <div class="card card-common p-4">
         
         <form method="POST">
-            {# Form Security #}
             {{ form.hidden_tag() }} 
             
-            {# --- FIELDS IN REQUESTED SEQUENCE START --- #}
-            
-            {# 1. Genres Field (Custom block for instructions) #}
             <div class="form-group mb-4">
                 <label for="{{ form.genres.name }}"><p class="font-weight-bold mb-0 text-secondary" style="font-size: 1.1rem;">Choose mulitple Genres: </h4></label>
                 {{ form.genres(class_='form-control', size=8) }}
@@ -22,29 +17,20 @@
                 {% endfor %}
             </div>
 
-            {# 2. Title Field #}
             {{ render_field(form.title, class_='form-control') }}
             
-            {# 3. Category Field #}
             {{ render_field(form.category, class_='form-control') }}
 
-            {# 4. URL for Cover Field #}
             {{ render_field(form.url, class_='form-control') }}
 
-            {# 5. Description Field #}
             {{ render_field(form.description, class_='form-control', rows=6, placeholder='Enter description (seperate paragraphs by pressing Enter)') }}
 
-            {# 6. Authors Field (TextArea for unlimited, newline-separated entry) #}
             {{ render_field(form.authors, class_='form-control', rows=5, placeholder='Enter author names (separated by pressing Enter)') }}
             
-            {# 7. Number of Pages Field #}
             {{ render_field(form.pages, class_='form-control') }}
 
-            {# 8. Number of Copies Field #}
             {{ render_field(form.copies, class_='form-control') }}
-            
-            {# --- FIELDS IN REQUESTED SEQUENCE END --- #}
-
+    
             <button type="submit" class="btn btn-success float-right mt-4">{{ form.submit.label.text }}</button>
             
         </form>

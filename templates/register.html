@@ -9,16 +9,12 @@
         <h1 class="mb-5 font-weight-bold border-bottom pb-2 display-5">Register</h1>
         
         <form method="POST">
-            {# Form Security #}
             {{ form.hidden_tag() }} 
-            
-            {# Email Field #}
+    
             {{ render_field(form.email, placeholder='Enter email') }}
             
-            {# Password Field #}
             {{ render_field(form.password, placeholder='Enter password', type='password') }}
             
-            {# Name Field #}
             {{ render_field(form.name) }}
 
             <button type="submit" class="btn btn-success float-right mt-3">Submit</button>

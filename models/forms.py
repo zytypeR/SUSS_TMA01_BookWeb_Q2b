@@ -17,8 +17,6 @@ class LoginForm(FlaskForm):
 
 class NewBookForm(FlaskForm):
     title = StringField('Title:', validators=[DataRequired(), Length(max=150)])
-        
-    # Genres: Using SelectMultipleField for multi-selection.
     genres_choices = [
         "Animals", "Business", "Comics", "Communication", "Dark Academia", 
         "Emotion", "Fantasy", "Fiction", "Friendship", "Graphic Novels", "Grief", 
@@ -27,20 +25,11 @@ class NewBookForm(FlaskForm):
         "Productivity", "Psychology", "Romance", "School", "Self Help"
     ]
     genres = SelectMultipleField('Genres (Select all that apply)', choices=[(g, g) for g in genres_choices], validators=[DataRequired()])
-    
-    # Category: Using SelectField for single selection.
     category_choices = [('Adult', 'Adult'), ('Teens', 'Teens'), ('Children', 'Children')]
     category = SelectField('Choose a category:', choices=category_choices, validators=[DataRequired()])
-    
-    # Description: Using TextAreaField for multiple paragraphs. Instruct admin to separate paragraphs by newlines.
     description = TextAreaField('Description:', validators=[DataRequired()])
-    
     pages = IntegerField('Number of Pages:', validators=[DataRequired(), NumberRange(min=1)])
-    
     copies = IntegerField('Number of Copies:', validators=[DataRequired(), NumberRange(min=1)])
-    
     url = StringField('URL for Cover:', validators=[DataRequired(), URL()])
-
-    authors = TextAreaField('Author/s', validators=[DataRequired()])
-
+    authors = TextAreaField('Author(s):', validators=[DataRequired()])
     submit = SubmitField('Submit')
