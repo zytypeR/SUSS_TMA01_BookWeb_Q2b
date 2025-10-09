@@ -3,8 +3,6 @@ from flask_mongoengine import MongoEngine
 from flask_login import LoginManager, UserMixin
 from mongoengine import Document
 
-# APPLICATION FACTORY
-
 def create_app(): 
     """
     Initializes and configures the Flask application, MongoEngine, and Flask-Login.
@@ -20,10 +18,8 @@ def create_app():
     }
     app.static_folder = 'assets' 
     
-    # initialize extensions
     db = MongoEngine(app)
     
-    # flask-Login setup
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -39,5 +35,4 @@ from .models.user_loan import User, Loan
 
 @login_manager.user_loader
 def load_user(user_id):
-    # Retrieves the user object using the ID provided by Flask-Login
     return User.getUserById(user_id)
