@@ -1,5 +1,5 @@
 {% extends "book_base.html" %}
-{% from "_render_field.html" import render_field %}
+{% from "_log_reg_render.html" import log_reg_render %}
 
 {% block mainblock %}
 
@@ -13,10 +13,10 @@
             {{ form.hidden_tag() }} 
             
             {# Email Field #}
-            {{ render_field(form.email, placeholder='Enter email') }}
+            {{ log_reg_render(form.email, placeholder='Enter email') }}
             
             {# Password Field #}
-            {{ render_field(form.password, placeholder='Enter password', type='password') }}
+            {{ log_reg_render(form.password, placeholder='Enter password', type='password') }}
 
             <div class="form-group form-check mt-3">
                 {{ form.remember(class_='form-check-input') }}

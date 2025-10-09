@@ -1,5 +1,5 @@
 {% extends "book_base.html" %}
-{% from "_render_field.html" import render_field %}
+{% from "_log_reg_render.html" import log_reg_render %}
 
 {% block mainblock %}
 
@@ -11,11 +11,14 @@
         <form method="POST">
             {{ form.hidden_tag() }} 
     
-            {{ render_field(form.email, placeholder='Enter email') }}
-            
-            {{ render_field(form.password, placeholder='Enter password', type='password') }}
-            
-            {{ render_field(form.name) }}
+            {# Email Field #}
+            {{ log_reg_render(form.email, placeholder='Enter email') }}
+            
+            {# Password Field #}
+            {{ log_reg_render(form.password, placeholder='Enter password', type='password') }}
+            
+            {# Name Field #}
+            {{ log_reg_render(form.name, placeholder='Enter name') }}
 
             <button type="submit" class="btn btn-success float-right mt-3">Submit</button>
             
