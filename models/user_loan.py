@@ -4,6 +4,26 @@ from flask_login import UserMixin
 from .books import Book 
 import random
 
+# Place this helper function at the top of your file, after imports:
+def generate_valid_loan_date(start_dt):
+    """
+    Generates a new date that is 10-20 days after the start_dt, 
+    but cannot be later than today's date (datetime.utcnow().date()).
+    """
+    # 1. Calculate the target date (10-20 days from start_dt)
+    random_days = random.randint(10, 20)
+    calculated_date = start_dt.date() + timedelta(days=random_days)
+    
+    # 2. Define the ceiling (today's date, UTC)
+    today_utc = datetime.utcnow().date()
+    
+    # 3. Apply the constraint: the result cannot be later than today_utc
+    # This uses the MINIMUM date between the calculated date and today's date.
+    if calculated_date > today_utc:
+        return today_utc
+    else:
+        return calculated_date
+
 class User(Document, UserMixin):
     email = StringField(required=True, unique=True)
     password = StringField(required=True)
@@ -61,9 +81,9 @@ class Loan(Document):
                 borrowDate=borrow_date_past # Use the past date
             )
             new_loan.save()
-            return True, f"Successfully borrowed '{book_obj.title}'. (Loan recorded {past_days} days ago for testing)."
+            return True, f"Successfully borrowed '{book_obj.title}'. Enjoy reading!"
         else:
-            return False, f"Sorry, '{book_obj.title}' is currently out of copies."
+            return False, f"Oops, '{book_obj.title}' is currently out of copies."
         
     @classmethod
     def get_all_loans_for_user(cls, user_obj):
@@ -89,25 +109,36 @@ class Loan(Document):
     
     def renew_loan(self):
         """
-        Renews an active loan: increments renewCount and updates borrowDate to now.
-        Returns True/False (renewal status).
+        Renews an active loan: increments renewCount and updates borrowDate 
+        to a new, randomly calculated date (10-20 days from old borrowDate, capped at today).
         """
+        # Note: You should enforce the max_renewals and is_overdue checks in the Flask route
         if self.returnDate is None:
+            # Calculate the new borrow date using the current borrowDate as the start point
+            new_borrow_date = generate_valid_loan_date(self.borrowDate)
+            
+            # Update the loan document
             self.renewCount += 1
-            self.borrowDate = datetime.utcnow() # Update borrow date to mark renewal
+            # Convert the date object back to a datetime object for storage
+            self.borrowDate = datetime.combine(new_borrow_date, datetime.min.time())
             self.save()
             return True
         return False
         
     def return_loan(self):
         """
-        Marks a loan as returned, updates the book's available count, and sets the returnDate.
-        Returns True/False (return status).
+        Marks a loan as returned, updates the book's available count, and sets the returnDate 
+        to a new, randomly calculated date (10-20 days from now, capped at today).
         """
         if self.returnDate is None:
             # Update book inventory first. If successful, update the loan record.
             if self.book.return_book(): # This calls the method added in books.py
-                self.returnDate = datetime.utcnow()
+                
+                # Calculate the return date using the current UTC time as the start point
+                random_return_date = generate_valid_loan_date(datetime.utcnow())
+                
+                # Update the loan record
+                self.returnDate = datetime.combine(random_return_date, datetime.min.time())
                 self.save()
                 return True
             # Failed to update book inventory (e.g., integrity error)
