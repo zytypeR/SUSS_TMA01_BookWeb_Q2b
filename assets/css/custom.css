@@ -1,5 +1,4 @@
 /* main section */
-
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #eee;
@@ -19,7 +18,7 @@ body {
     background-position: left;
     background-repeat: no-repeat;
     background-size: cover;
-    box-shadow: 5px 7px 25px #999; /* this creates the 3D effect */
+    box-shadow: 5px 7px 25px #999; /* creates the 3D effect */
     color: white !important; 
     padding-top: 20px !important;
 }
@@ -143,18 +142,8 @@ body {
 
 .btn-danger:disabled {
     background-color: #dc3545;
-    
     border-color: #dc3545;
     color: #fff;
-    
     opacity: 1; 
-    
     pointer-events: none;
-}
-
-/* Custom style for Overdue Loan Cards */
-.loan-overdue-card {
-    border-width: 3px !important; /* Sets the required width */
-    /* Ensure the color is red for danger status if Bootstrap doesn't apply it */
-    border-color: #dc3545 !important; 
 }

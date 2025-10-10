@@ -110,7 +110,6 @@
       <div class="row">
         <div class="col-xl-10 col-lg-9 col-md-8 ml-auto">
           <div class="row p-1"> 
-            {# Block for Flash Messages #}
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                 <div class="col-12 mt-3">
@@ -125,7 +124,6 @@
                 </div>
                 {% endif %}
             {% endwith %}
-            {# End Flash Block #}
             {% block mainblock %} 
             {% endblock %}
           </div>

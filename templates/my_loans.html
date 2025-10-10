@@ -4,7 +4,7 @@
 
 {% set date_format = '%d %b %Y' %}
 
-{# Case 1: No Loan Records - Display message #}
+{# No Loan Records #}
 {% if user_loans|length == 0 %}
 <div class="col-xl-12 col-md-12 col-sm-12 p-2">
     <h4 class="my-2 text-left text-secondary pl-3">
@@ -13,7 +13,6 @@
 </div>
 {% else %}
 
-{# --- STATIC HEADER CARD (Headers) --- #}
 <div class="col-xl-12 col-md-12 col-sm-12 px-5 pb-0 mb-0">
     <div class="card card-common p-3 mb-0" style="background-color: #f8f9fa;"> 
         <div class="row no-gutters text-dark font-weight-bold">
@@ -26,45 +25,32 @@
     </div>
 </div>
 
-{# Case 2: Loan Records Exist - Iterates through each loan #}
+{# Loan Records Exist #}
 {% for loan in user_loans %}
     
     {% set is_returned = not loan.is_active %}
     {% set is_overdue = loan.is_overdue %}
     {% set max_renewals = loan.renewCount >= 2 %} 
     
-    {# --- LOAN DETAIL CARD --- #}
     <div class="col-xl-12 col-md-12 col-sm-12 px-5 mt-0 pt-0"> 
         <div class="card card-common h-100 p-4 mb-0"
         >
             
-            {# Row for Details and Actions #}
             <div class="row no-gutters align-items-center">
-
-                {# Column 1: Book Details - Col-5 #}
                 <div class="col-md-5 col-sm-12"> 
-                    
-                    {# Book Cover #}
                     <div class="d-block mb-2 text-left pl-3" style="max-width: 70px;"> 
                         <img src="{{ loan.book.url }}" class="img-fluid" style="object-fit: contain;" alt="Cover of {{ loan.book.title }}" />
                     </div>
-
-                    {# Title - With mb-3 spacing #}
                     <p class="card-text mb-3 text-left">{{ loan.book.title }}</p>
-                    
-                    {# Author #}
                     <p class="card-text small text-dark text-left">By {{ loan.book.authors | join(', ') }}</p>
-                    
                 </div>
 
-                {# Column 2: Due Date - Col-2 #}
                 <div class="col-md-2 col-sm-12 text-center align-self-center">
                     <p class="card-text mb-0 text-dark">
                         {{ loan.due_date.strftime(date_format) }}
                     </p>
                 </div>
 
-                {# Column 3: Return Date - Col-2 #}
                 <div class="col-md-2 col-sm-12 text-center align-self-center">
                     <p class="card-text mb-0 text-dark">
                         {% if is_returned %}
@@ -74,13 +60,11 @@
                         {% endif %}
                     </p>
                 </div>
-                
-                {# Column 4: Renew Count - Col-1 #}
+
                 <div class="col-md-1 col-sm-12 text-center align-self-center">
                     <p class="card-text mb-0">{{ loan.renewCount }}</p>
                 </div>
 
-                {# Column 5: Action Buttons - Col-2 (FIXED: Alignment to Left) #}
                 <div class="col-md-2 col-sm-12 d-flex justify-content-start align-items-center align-self-center">
 
                     {% if is_returned %}
@@ -90,16 +74,12 @@
                             Delete
                         </a>
                     {% else %}
-                        {# Case B: Active Loan (Buttons start on the left and stay close together) #}
                         <div class="d-flex justify-content-start">
-                            
-                            {# Return Button (Added mr-2 for spacing) #}
                             <a href="{{ url_for('book.return_loan', loan_id=loan.id) }}" class="btn btn-success btn-sm mr-2">
                                 Return
                             </a>
 
                             {% if not is_overdue and not max_renewals %}
-                                {# Renew Button #}
                                 <a href="{{ url_for('book.renew_loan', loan_id=loan.id) }}" class="btn btn-success btn-sm">
                                     Renew
                                 </a>
