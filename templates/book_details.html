@@ -25,28 +25,21 @@
                     Copies: <b>{{ book.copies }}</b> Available: <b>{{ book.available }}</b>
                 </p>
 
-                {# Description Section #}
                 {% for paragraph in book.description %}
                     <p class="card-text">{{ paragraph }}</p>
                 {% endfor %}
                 
-                 {# Description Section #}
                 {% for paragraph in book.description %}
                     <p class="card-text">{{ paragraph }}</p>
                 {% endfor %}
                 
-                {# --- START TASK 2: LOAN STATUS & BUTTONS --- #}
                 <div class="mt-4 float-right">
                     
-                    {# Back Button: Now btn-success (green) and placed first for right-alignment #}
                     <a href="{{ url_for('book.book_titles') }}" class="btn btn-success mr-2">Back to Book Titles</a>
 
-                    {# Conditional Loan/Unavailable Button: Now placed second #}
                     {% if book.available > 0 %}
-                        {# Available: Make a Loan (green - default) #}
                         <a href="{{ url_for('book.make_loan', book_id=book._id) }}" class="btn btn-success">Make a Loan</a>
                     {% else %}
-                        {# Not Available: Now btn-danger (bright red) #}
                         <button type="button" class="btn btn-danger" disabled>Not Available</button>
                     {% endif %}
 
@@ -55,7 +48,6 @@
             </div>
             
         </div>
-        {# End of d-flex container #}
 
     </div>
 </div>

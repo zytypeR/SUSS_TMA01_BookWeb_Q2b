@@ -180,14 +180,7 @@ class Book(Document):
     copies = IntField(required=True)
     meta = {'collection': 'book'}
 
-    # --- START NEW INSTANCE METHODS FOR LOAN FUNCTIONALITY (Task 3) ---
     def borrow(self):
-        """
-        Decrements the available count if a copy is available.
-        Updates the document in the database.
-        Returns True on success, False otherwise.
-        """
-        # Sanity Check: Ensure there is at least one book available
         if self.available > 0:
             self.available -= 1
             self.save() 
@@ -195,30 +188,14 @@ class Book(Document):
         return False
 
     def return_book(self):
-        """
-        Increments the available count if the current count is less than the total copies.
-        Updates the document in the database.
-        
-        Note: The sanity check for "previously borrowed" is handled by the 
-        Loan model/route checking for an active loan record, but this check 
-        prevents increasing availability beyond total copies.
-        
-        Returns True on success, False otherwise.
-        """
-        # Sanity Check: Ensure the returned count doesn't exceed the total copies.
         if self.available < self.copies:
             self.available += 1
             self.save()
             return True
         return False
-    # --- END NEW INSTANCE METHODS ---
 
     @classmethod
     def initialize_db(cls):
-        """
-        meeting the requirement that if the Book collection is empty, read RAW_BOOK_DATA and create Book documents 
-        to store into MongoDB.
-        """
         if cls.objects.count() == 0:
             print("--- Seeding Check: Book collection is empty. Preparing to load data... ---")
             for book_data in RAW_BOOK_DATA:
@@ -231,9 +208,6 @@ class Book(Document):
 
     @classmethod
     def getAllBooks(cls, category_filter='All'):
-        """
-        retrieves books from MongoDB based on category filter and sorts by title.
-        """
         # query MongoDB (using .order_by('title') for sorting)
         if category_filter == 'All':
             books = cls.objects.all().order_by('title')
@@ -252,9 +226,6 @@ class Book(Document):
 
     @classmethod
     def getBookByTitle(cls, title):
-        """
-        retrieves a single book document from MongoDB by title, and formats it.
-        """
         book = cls.objects(title=title).first()
         
         if book:
