@@ -32,45 +32,54 @@ def view_book_detail(title):
 @book.route('/make_loan/<book_id>', methods=['GET'])
 @login_required
 def make_loan(book_id):
+    """
+    Handles the action of borrowing a book by calling the core Loan creation method.
+    """
     try:
         book_obj = Book.objects.get(id=book_id)
     except Exception:
         flash("Book not found.", "danger")
         return redirect(url_for('book.book_titles'))
 
-    existing_loan = Loan.objects(member=current_user.id, book=book_obj, returnDate=None).first()
-    if existing_loan:
-        flash(f"You already have an active loan for '{book_obj.title}'.", "warning")
-        return redirect(url_for('book.book_titles'))
+    # Call the encapsulated logic from the Loan model
+    status, message = Loan.create_loan_document(current_user, book_obj)
 
-    if book_obj.borrow(): 
-        Loan(member=current_user.id, book=book_obj).save()
-        flash(f"Successfully borrowed '{book_obj.title}'. Happy reading!", "success")
+    if status:
+        flash(message, "success")
     else:
-        flash(f"Sorry, '{book_obj.title}' is currently out of copies.", "danger")
+        flash(message, "warning") # Use warning for user-error like existing loan, danger for inventory error
         
     return redirect(url_for('book.book_titles'))
 
 @book.route('/return_loan/<loan_id>', methods=['GET'])
 @login_required
 def return_loan(loan_id):
-    loan_obj = Loan.getLoanById(loan_id) 
+    """
+    Handles the action of returning a book using the Loan model's encapsulated logic.
+    """
+    # 1. Retrieve the loan using the correct helper method name
+    loan_obj = Loan.get_specific_loan(loan_id) 
 
     if not loan_obj:
         flash("Loan record not found.", "danger")
         return redirect(url_for('book.book_titles'))
-
-    if str(loan_obj.member.id) != str(current_user.id) or loan_obj.returnDate is not None:
-        flash("Invalid action: This loan is either not yours or has already been returned.", "danger")
+        
+    # Security check 1: Ensure the loan belongs to the current user
+    if str(loan_obj.member.id) != str(current_user.id):
+        flash("Invalid action: This loan is not yours.", "danger")
+        return redirect(url_for('book.book_titles'))
+        
+    # Security check 2: Ensure the loan is still active
+    if not loan_obj.is_active: # Using the new .is_active property from Loan class
+        flash("Invalid action: This loan has already been returned.", "warning")
         return redirect(url_for('book.book_titles'))
 
-    if loan_obj.book.return_book(): 
-        from datetime import datetime
-        loan_obj.returnDate = datetime.utcnow()
-        loan_obj.save()
+    # 2. Use the encapsulated return_loan instance method
+    if loan_obj.return_loan():
         flash(f"Successfully returned '{loan_obj.book.title}'. Thank you!", "success")
     else:
-        flash(f"Could not return '{loan_obj.book.title}'. An error occurred.", "danger")
+        # This occurs if the inventory update (book.return_book) fails
+        flash(f"Could not return '{loan_obj.book.title}'. An error occurred during inventory update.", "danger")
 
     return redirect(url_for('book.book_titles'))
 
