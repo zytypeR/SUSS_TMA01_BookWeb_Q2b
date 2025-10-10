@@ -1,5 +1,5 @@
 from flask import render_template, redirect, url_for, Blueprint, request, flash
-from .__init__ import app, db, Book 
+from .__init__ import app, db, Book, Loan
 from .controllers.auth import auth
 from flask_login import current_user, login_required
 from .models.forms import NewBookForm
@@ -28,6 +28,65 @@ def view_book_detail(title):
     return render_template('book_details.html',
                            book=book_details,
                            panel="BOOK DETAILS")
+
+# --- NEW ROUTE: MAKE A LOAN ---
+@book.route('/make_loan/<book_id>', methods=['GET'])
+@login_required
+def make_loan(book_id):
+    """
+    Handles the request to borrow a book.
+    """
+    try:
+        # 1. Retrieve the Book object using the MongoDB ID
+        book_obj = Book.objects.get(id=book_id)
+    except Exception:
+        flash("Book not found.", "danger")
+        return redirect(url_for('book.book_titles'))
+
+    # 2. Prevent users from borrowing the same book multiple times
+    existing_loan = Loan.objects(member=current_user.id, book=book_obj, returnDate=None).first()
+    if existing_loan:
+        flash(f"You already have an active loan for '{book_obj.title}'.", "warning")
+        return redirect(url_for('book.book_titles'))
+
+    # 3. Attempt to borrow the book (calls book_obj.borrow() in books.py)
+    if book_obj.borrow(): 
+        # 4. Create a new Loan record
+        Loan(member=current_user.id, book=book_obj).save()
+        flash(f"Successfully borrowed '{book_obj.title}'. Happy reading!", "success")
+    else:
+        flash(f"Sorry, '{book_obj.title}' is currently out of copies.", "danger")
+        
+    return redirect(url_for('book.book_titles'))
+
+# --- NEW ROUTE: RETURN A LOAN (Needed for loan management) ---
+@book.route('/return_loan/<loan_id>', methods=['GET'])
+@login_required
+def return_loan(loan_id):
+    """
+    Handles the request to return a book associated with a specific loan ID.
+    """
+    loan_obj = Loan.getLoanById(loan_id) 
+
+    if not loan_obj:
+        flash("Loan record not found.", "danger")
+        return redirect(url_for('book.book_titles'))
+
+    # Security check: Ensure the loan belongs to the current user and is active
+    if str(loan_obj.member.id) != str(current_user.id) or loan_obj.returnDate is not None:
+        flash("Invalid action: This loan is either not yours or has already been returned.", "danger")
+        return redirect(url_for('book.book_titles'))
+
+    # Perform the return (calls loan_obj.book.return_book() in books.py)
+    if loan_obj.book.return_book(): 
+        from datetime import datetime
+        loan_obj.returnDate = datetime.utcnow()
+        loan_obj.save()
+        flash(f"Successfully returned '{loan_obj.book.title}'. Thank you!", "success")
+    else:
+        flash(f"Could not return '{loan_obj.book.title}'. An error occurred.", "danger")
+
+    return redirect(url_for('book.book_titles'))
 
 @book.route('/new_book', methods=['GET', 'POST'])
 @login_required

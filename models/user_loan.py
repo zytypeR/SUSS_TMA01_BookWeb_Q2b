@@ -36,3 +36,23 @@ class Loan(Document):
     
     renewCount = IntField(default=0)
     meta = {'collection': 'loan'}
+
+    # --- NEW CLASS METHODS FOR LOAN FUNCTIONALITY ---
+    @classmethod
+    def getAllActiveLoansForUser(cls, user_id):
+        """
+        Retrieves all loans for a given user where returnDate is None (active loans).
+        """
+        return cls.objects(member=user_id, returnDate=None).all()
+    
+    @classmethod
+    def getLoanById(cls, loan_id):
+        """
+        Retrieves a single Loan document by its ID.
+        """
+        from mongoengine.queryset import InvalidQueryError
+        try:
+            return cls.objects.get(id=loan_id)
+        except InvalidQueryError:
+            return None
+    # --- END NEW METHODS ---

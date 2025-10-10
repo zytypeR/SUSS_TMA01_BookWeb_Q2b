@@ -33,6 +33,14 @@
         <div class="card-body col-10">
             <h4 class="card-title">{{ book.title }}</h4>
             <h6 class="card-subtitle mb-2 text-muted">By {{ book.author }}</h6>
+
+            {# --- ADDED: Available copies info --- #}
+            <div class="mb-2">
+                <p class="card-text small mb-1 pl-0">
+                    Copies: {{ book.copies }} | <strong>{{ book.available }} Available</strong>
+                </p>
+            </div>
+
             <div class="category-wrapper-fix">
             <p class="card-text small mb-2 pl-0">
             Category: {{ book.category }}, {{ book.genres | join(', ') }} <br>
@@ -49,7 +57,13 @@
                 <p class="card-text">{{ paragraphs[-1] }}</p>
             {% endif %}
 
-            <a href="{{ url_for('book.view_book_detail', title=book.title) }}" class="btn btn-success float-right mt-4">More details</a>
+            <a href="{{ url_for('book.view_book_detail', title=book.title) }}" class="btn btn-success float-right mt-4 ml-2">More details</a>
+
+            {% if book.available > 0 %}
+                {# Use the book's MongoDB ID (_id) for the loan function #}
+                <a href="{{ url_for('book.make_loan', book_id=book._id) }}" class="btn btn-success float-right mt-4">Make a Loan</a>
+            {% endif %}
+
         </div>
     </div>
   </div>

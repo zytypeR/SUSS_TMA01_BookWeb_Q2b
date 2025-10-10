@@ -88,7 +88,6 @@ body {
     color: #000080 !important;
 }
 
-/* cards */
 .card-common {
     box-shadow: 1px 2px 5px #999;
     transition: all .4s;
@@ -99,18 +98,15 @@ body {
     transform: translateY(-1px); 
 }
 
-/* custom fix to push main content down below fixed top-nav */
 .col-xl-10.ml-auto {
     padding-top: 0px;  
 }
 
-/* custom rule to pull Category/Pages text slightly to the left */
 .category-wrapper-fix p {
     margin-left: -28px !important; 
     padding-left: 0 !important;
 }
 
-/* to change author text from gray to black */
 .card-subtitle {
     color: black !important;
 }
@@ -118,31 +114,40 @@ body {
 @media (max-width: 767.98px) {
     
     .sidebar, .top-navbar {
-        position: static !important; /* make them stack */
+        position: static !important;
         width: 100%; 
         left: auto !important;
         top: auto !important;
     }
     
     .sidebar {
-        height: auto !important; /* allows the height to collapse around its content */
+        height: auto !important; 
         padding-top: 10px !important; 
         padding-bottom: 10px !important;
     }
     
-    /* remove the left offset (ml-auto) and top padding from the main content on mobile */
     .col-xl-10.col-lg-9.col-md-8.ml-auto {
         margin-left: 0 !important;
         padding-top: 0 !important; 
     }
 }
 
-/* Custom CSS for sidebar user profile divider */
 .sidebar-divider {
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
     margin-left: auto;
     margin-right: auto;
-    width: 80%; /* Adjust width to your liking */
+    width: 80%; 
+}
+
+.btn-danger:disabled {
+    background-color: #dc3545;
+    
+    border-color: #dc3545;
+    color: #fff;
+    
+    opacity: 1; 
+    
+    pointer-events: none;
 }

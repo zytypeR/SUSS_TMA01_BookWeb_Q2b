@@ -180,6 +180,39 @@ class Book(Document):
     copies = IntField(required=True)
     meta = {'collection': 'book'}
 
+    # --- START NEW INSTANCE METHODS FOR LOAN FUNCTIONALITY (Task 3) ---
+    def borrow(self):
+        """
+        Decrements the available count if a copy is available.
+        Updates the document in the database.
+        Returns True on success, False otherwise.
+        """
+        # Sanity Check: Ensure there is at least one book available
+        if self.available > 0:
+            self.available -= 1
+            self.save() 
+            return True
+        return False
+
+    def return_book(self):
+        """
+        Increments the available count if the current count is less than the total copies.
+        Updates the document in the database.
+        
+        Note: The sanity check for "previously borrowed" is handled by the 
+        Loan model/route checking for an active loan record, but this check 
+        prevents increasing availability beyond total copies.
+        
+        Returns True on success, False otherwise.
+        """
+        # Sanity Check: Ensure the returned count doesn't exceed the total copies.
+        if self.available < self.copies:
+            self.available += 1
+            self.save()
+            return True
+        return False
+    # --- END NEW INSTANCE METHODS ---
+
     @classmethod
     def initialize_db(cls):
         """
@@ -228,5 +261,7 @@ class Book(Document):
             formatted = book.to_mongo().to_dict()
             formatted['image_url'] = book.url
             formatted['author'] = ", ".join(book.authors)
+            if '_id' in formatted:
+                formatted['_id'] = str(formatted['_id'])
             return formatted
         return None
