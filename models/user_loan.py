@@ -1,7 +1,8 @@
 from mongoengine import Document, StringField, ReferenceField, DateTimeField, IntField, BooleanField
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_login import UserMixin
 from .books import Book 
+import random
 
 class User(Document, UserMixin):
     email = StringField(required=True, unique=True)
@@ -35,10 +36,7 @@ class Loan(Document):
     @classmethod
     def create_loan_document(cls, user_obj, book_obj):
         """
-        Attempts to create a new Loan document.
-        A loan is only created if:
-        1. The book has available copies.
-        2. The user does not already have an unreturned loan for this book.
+        Attempts to create a new Loan document with a borrow date 10-20 days in the past.
         Returns a tuple: (True/False: status, message)
         """
         # Check 1: User does not already have an unreturned loan for this book
@@ -48,12 +46,22 @@ class Loan(Document):
 
         # Check 2: Book has available copies and update available count
         if book_obj.borrow(): 
-            # If book.borrow() returns True, inventory was updated successfully.
+            # --- MODIFICATION FOR PAST DATE REQUIREMENT ---
+            # 1. Generate a random number of days between 10 and 20
+            past_days = random.randint(10, 20)
             
-            # Create the new loan record
-            new_loan = cls(member=user_obj, book=book_obj, borrowDate=datetime.utcnow())
+            # 2. Calculate the borrow date
+            borrow_date_past = datetime.utcnow() - timedelta(days=past_days)
+            # ----------------------------------------------
+            
+            # Create the new loan record using the calculated past date
+            new_loan = cls(
+                member=user_obj, 
+                book=book_obj, 
+                borrowDate=borrow_date_past # Use the past date
+            )
             new_loan.save()
-            return True, f"Successfully borrowed '{book_obj.title}'."
+            return True, f"Successfully borrowed '{book_obj.title}'. (Loan recorded {past_days} days ago for testing)."
         else:
             return False, f"Sorry, '{book_obj.title}' is currently out of copies."
         
