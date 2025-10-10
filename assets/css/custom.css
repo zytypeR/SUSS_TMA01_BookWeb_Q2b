@@ -151,3 +151,10 @@ body {
     
     pointer-events: none;
 }
+
+/* Custom style for Overdue Loan Cards */
+.loan-overdue-card {
+    border-width: 3px !important; /* Sets the required width */
+    /* Ensure the color is red for danger status if Bootstrap doesn't apply it */
+    border-color: #dc3545 !important; 
+}

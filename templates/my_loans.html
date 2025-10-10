@@ -1,0 +1,118 @@
+{% extends "book_base.html" %}
+
+{% block mainblock %}
+
+<div class="col-xl-12 px-2">
+    <div class="card card-common">
+        <div class="card-header book-header-green d-flex justify-content-between align-items-center mb-0 py-1"> 
+            <h5 class="my-0">My Loans ({{ user_loans|length }} records found)</h5>
+        </div>
+    </div>
+</div>
+
+{# Case 1: No Loan Records - Matches first image #}
+{% if user_loans|length == 0 %}
+<div class="col-xl-12 col-md-12 col-sm-12 p-2">
+    <div class="card card-common h-100 p-4 text-center">
+        <h3 class="my-3 text-secondary">
+            <i class="fas fa-search-dollar fa-3x mb-3"></i><br>
+            No loan records found!
+        </h3>
+        <p class="lead">Start borrowing books from the <a href="{{ url_for('book.book_titles') }}">Book Titles</a> page.</p>
+    </div>
+</div>
+{% endif %}
+
+{# Case 2: Loan Records Exist - Iterates and applies conditional styling/actions #}
+{% for loan in user_loans %}
+    
+    {% set is_returned = not loan.is_active %}
+    {% set is_overdue = loan.is_overdue %}
+    {# renewCount starts at 0. Max renewals is 2, so max count is 2 (0, 1, 2) #}
+    {% set max_renewals = loan.renewCount >= 2 %} 
+
+    {# Apply border styling: Green for returned, Red for overdue #}
+    <div class="col-xl-12 col-md-12 col-sm-12 p-2">
+        <div class="card card-common h-100 d-flex flex-row p-3 
+            {% if is_returned %} 
+                border-success 
+            {% elif is_overdue %} 
+                border-danger loan-overdue-card
+            {% endif %}"
+        >
+          
+            {# Book Cover #}
+            <div class="col-2 p-0 h-100 d-flex align-items-start justify-content-center pt-4">
+                <img src="{{ loan.book.url }}" class="img-fluid h-100" style="object-fit: contain;" alt="Cover of {{ loan.book.title }}" />
+            </div>
+
+            {# Loan Details #}
+            <div class="card-body col-8">
+                <h4 class="card-title">{{ loan.book.title }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">By {{ loan.book.author | join(', ') }}</h6>
+                
+                <p class="card-text small mb-1">
+                    Borrow Date: <b>{{ loan.borrowDate.strftime('%d %b %Y, %I:%M%p') }}</b>
+                </p>
+                
+                <p class="card-text small mb-1">
+                    {% if is_returned %}
+                        <span class="text-success font-weight-bold">RETURNED</span> on 
+                        <b>{{ loan.returnDate.strftime('%d %b %Y, %I:%M%p') }}</b>
+                    {% else %}
+                        Due Date: 
+                        <b class="{% if is_overdue %}text-danger font-weight-bold{% endif %}">
+                            {{ loan.due_date.strftime('%d %b %Y, %I:%M%p') }}
+                        </b>
+                        {% if is_overdue %}
+                            <span class="text-danger small">(OVERDUE)</span>
+                        {% endif %}
+                    {% endif %}
+                </p>
+                
+                <p class="card-text small mb-1">
+                    Renewals Used: <b>{{ loan.renewCount }}</b>
+                </p>
+            </div>
+
+            {# --- Action Buttons --- #}
+            <div class="col-2 d-flex flex-column justify-content-center align-items-center">
+
+                {# 1. RETURNED Loans: Only show DELETE button #}
+                {% if is_returned %}
+                    <a href="{{ url_for('book.delete_loan', loan_id=loan.id) }}" 
+                       class="btn btn-danger btn-block my-1">
+                        <i class="fas fa-trash-alt mr-1"></i>Delete Record
+                    </a>
+                
+                {# 2. ACTIVE Loans #}
+                {% else %}
+                    
+                    {# RENEW: Available only if NOT overdue AND renewCount < 2 #}
+                    {% if not is_overdue and not max_renewals %}
+                        <a href="{{ url_for('book.renew_loan', loan_id=loan.id) }}" 
+                           class="btn btn-info btn-block my-1">
+                            <i class="fas fa-sync-alt mr-1"></i>Renew Loan
+                        </a>
+                    
+                    {# Renewal Not Allowed (Overdue OR Max Renewals Reached) #}
+                    {% else %}
+                        <button type="button" class="btn btn-light btn-block my-1 border text-secondary" disabled>
+                            Renewal Not Allowed
+                        </button>
+                    {% endif %}
+                    
+                    {# RETURN: Always allowed for active loans #}
+                    <a href="{{ url_for('book.return_loan', loan_id=loan.id) }}" 
+                       class="btn btn-success btn-block my-1">
+                        <i class="fas fa-undo-alt mr-1"></i>Return Book
+                    </a>
+                
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+{% endfor %}
+
+{% endblock %}

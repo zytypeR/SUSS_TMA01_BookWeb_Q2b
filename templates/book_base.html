@@ -55,6 +55,15 @@
                 </a>
               </li>
 
+              {# --- NEW LINK FOR MY LOANS (VISIBLE TO NON-ADMIN USERS) --- #}
+              {% if current_user.is_authenticated and not current_user.is_admin %}
+                <li class="bottom-border">
+                  <a href="{{ url_for('book.my_loans') }}" class="sidebar-link p-3">
+                    <i class="fas fa-history fa-lg mr-3"></i>Loans
+                  </a>
+                </li>
+              {% endif %}
+
               {# NEW: Admin-only link for Add New Book #}
               {% if current_user.is_authenticated and current_user.is_admin %}
               <li class="nav-item">

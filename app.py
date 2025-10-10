@@ -129,6 +129,70 @@ def new_book():
                            form=form,
                            panel="ADD A BOOK")
 
+# --- NEW VIEW LOANS ROUTE ---
+@book.route('/myloans', methods=['GET'])
+@login_required
+def my_loans():
+    """
+    Retrieves all loan records for the authenticated user, ordered descending by borrow date.
+    """
+    if current_user.is_admin:
+        flash("Administrators do not have loan records to view.", "warning")
+        return redirect(url_for('book.book_titles'))
+
+    # Retrieves loans in descending order of borrow date, as required.
+    user_loans = Loan.get_all_loans_for_user(current_user)
+    
+    return render_template('my_loans.html',
+                           user_loans=user_loans,
+                           panel="MY LOANS")
+
+# --- NEW RENEW LOAN ROUTE ---
+@book.route('/renew_loan/<loan_id>', methods=['GET'])
+@login_required
+def renew_loan(loan_id):
+    loan_obj = Loan.get_specific_loan(loan_id)
+    
+    if not loan_obj or str(loan_obj.member.id) != str(current_user.id):
+        flash("Loan not found or does not belong to you.", "danger")
+        return redirect(url_for('book.my_loans'))
+    
+    if not loan_obj.is_active:
+        flash("Cannot renew a loan that has already been returned.", "warning")
+    elif loan_obj.is_overdue:
+        flash("Cannot renew an overdue loan. Please return it.", "warning")
+    elif loan_obj.renewCount >= 2: # Max renewals check (renewCount is 0-indexed, so 2 means 3 loans total)
+        flash("Maximum renewal count reached (2 renewals). Please return the book.", "warning")
+    else:
+        if loan_obj.renew_loan():
+            flash(f"Successfully renewed '{loan_obj.book.title}'. New due date is 14 days from now.", "success")
+        else:
+            flash(f"Failed to renew loan for '{loan_obj.book.title}'.", "danger")
+
+    return redirect(url_for('book.my_loans'))
+
+# --- NEW DELETE LOAN ROUTE ---
+@book.route('/delete_loan/<loan_id>', methods=['GET'])
+@login_required
+def delete_loan(loan_id):
+    loan_obj = Loan.get_specific_loan(loan_id)
+    
+    if not loan_obj or str(loan_obj.member.id) != str(current_user.id):
+        flash("Loan not found or does not belong to you.", "danger")
+        return redirect(url_for('book.my_loans'))
+
+    # Only loans that have been returned can be deleted (loan_obj.is_active must be False)
+    if loan_obj.is_active: 
+        flash("Only returned loans can be deleted from your history.", "warning")
+    else:
+        book_title = loan_obj.book.title
+        if loan_obj.delete_loan_document():
+            flash(f"Successfully deleted loan record for '{book_title}'.", "success")
+        else:
+            flash(f"Failed to delete loan record for '{book_title}'.", "danger")
+
+    return redirect(url_for('book.my_loans'))
+
 app.register_blueprint(book)
 app.register_blueprint(auth)
 

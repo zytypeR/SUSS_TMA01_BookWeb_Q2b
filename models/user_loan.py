@@ -128,6 +128,17 @@ class Loan(Document):
     def is_active(self):
         """Helper property to quickly check if a loan is unreturned."""
         return self.returnDate is None
+    
+    @property
+    def due_date(self):
+        """Calculates the due date (14 days after borrow date)."""
+        return self.borrowDate + timedelta(days=14)
+        
+    @property
+    def is_overdue(self):
+        """Checks if the loan is active AND past its due date."""
+        # Only overdue if active and the due date is in the past
+        return self.is_active and (self.due_date < datetime.utcnow())
 
     @classmethod
     def getAllActiveLoansForUser(cls, user_id):
