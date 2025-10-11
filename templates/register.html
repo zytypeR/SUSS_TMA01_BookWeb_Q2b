@@ -3,22 +3,22 @@
 
 {% block mainblock %}
 
-<div class="col-xl-8 col-lg-10 col-md-12 mr-auto pl-3 pr-0"> 
+<div class="col-xl-5 col-lg-8 col-md-12 col-sm-12 mr-auto px-3"> 
     <div class="card card-common p-4">
         
-        <h1 class="mb-5 font-weight-bold border-bottom pb-2 display-5">Register</h1>
+        <h1 class="mb-2 font-weight-bold border-bottom pb-2 display-4">Register</h1>
         
         <form method="POST">
             {{ form.hidden_tag() }} 
     
             {# Email Field #}
-            {{ log_reg_render(form.email, placeholder='Enter email') }}
+            {{ log_reg_render(form.email, field_margin='mb-1', placeholder='Enter email') }}
             
             {# Password Field #}
-            {{ log_reg_render(form.password, placeholder='Enter password', type='password') }}
+            {{ log_reg_render(form.password, field_margin='mb-1', placeholder='Enter password', type='password') }}
             
             {# Name Field #}
-            {{ log_reg_render(form.name, placeholder='Enter name') }}
+            {{ log_reg_render(form.name, field_margin='mb-3', placeholder='Enter name') }}
 
             <button type="submit" class="btn btn-success float-right mt-3">Submit</button>
             

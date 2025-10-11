@@ -1,12 +1,14 @@
-{% macro log_reg_render(field) %}
+{% macro log_reg_render(field, field_margin='') %}
 
-<div class="form-group">
-    <label for="{{ field.name }} "><h3>{{ field.label.text.capitalize() }}</h3></label>
-    {{ field(class_='form-control', **kwargs)|safe }}
-    <ul> 
-        {% for error in field.errors %}
-        <li style="color:red;">{{ error }}</li>
-        {% endfor %}
-    </ul>
+<div class="form-group mb-1">
+    <label for="{{ field.name }} ">{{ field.label.text.capitalize() }}</label>
+    {{ field(class_='form-control ' ~ field_margin, **kwargs)|safe }}
+    {% if field.errors %}
+    <ul class="list-unstyled mt-1 mb-0">
+        {% for error in field.errors %}
+        <li class="text-danger small">{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </div>
 {% endmacro %}
