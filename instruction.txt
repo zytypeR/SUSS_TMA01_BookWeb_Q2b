@@ -1,0 +1,7 @@
+Steps to run my codes. In the terminal, enter these commands (mine is in the Windows environment not MAC) 
+1. python -m venv venv 
+2. source venv/Scripts/activate 
+3. pip install -r requirements.txt
+4. pip install flask==2.2.5
+5. flask --debug run
+
