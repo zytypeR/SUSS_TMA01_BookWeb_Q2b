@@ -1,7 +1,5 @@
 Steps to run my codes. In the terminal, enter these commands (mine is in the Windows environment not MAC) 
-1. python -m venv venv 
-2. source venv/Scripts/activate 
-3. pip install -r requirements.txt
-4. pip install flask==2.2.5
-5. flask --debug run
-
+1. open integrated terminal 
+2. type in command start.sh 
+3. go back to Vocaareum Lab
+4. click on IDE and click flask_browser (similar to how Staycation webpage works)
