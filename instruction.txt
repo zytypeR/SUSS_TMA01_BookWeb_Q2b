@@ -1,5 +1,6 @@
 Steps to run my codes. In the terminal, enter these commands (mine is in the Windows environment not MAC) 
 1. open integrated terminal 
-2. type in command start.sh 
-3. go back to Vocaareum Lab
-4. click on IDE and click flask_browser (similar to how Staycation webpage works)
+2. type in command venv/source/Scripts/activate (if u r running locally on vscode, else ignore)
+3. type in command start.sh 
+4. go back to Vocaareum Lab
+5. click on IDE and click flask_browser (similar to how Staycation webpage works)
